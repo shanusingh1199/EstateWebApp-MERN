@@ -23,7 +23,7 @@ const userSlice=createSlice({
         },
         signInFailure:(state,action)=>{
             state.error=action.payload,
-            state.loading=false
+            state.loading=false;
         }
     }
 })
