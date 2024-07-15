@@ -49,7 +49,7 @@ export const signin = async (req, res, next) => {
     );
     res
       .status(200)
-      .cookie("accessToken", token, options)
+      .cookie("access_token", token, options)
       .json(new ApiResponse(200, loggedInUser, "Logged In successfully"));
   } catch (error) {
     next(error);
