@@ -8,6 +8,9 @@ import {
   updateUserFailure,
   updateUsersuccess,
   updateUsertart,
+  deleteUserFailure,
+  deleteUsersuccess,
+  deleteUserstart,
 } from "../redux/user/userSlice.js";
 import {
   getStorage,
@@ -24,7 +27,7 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
   const dispatch = useDispatch();
-  const { currentUser ,loading,error} = useSelector((state) => {
+  const { currentUser, loading, error } = useSelector((state) => {
     return state.user;
   });
   useEffect(() => {
@@ -83,6 +86,26 @@ export default function Profile() {
       dispatch(updateUserFailure(error.message));
     }
   };
+
+  const handleDeleteUser=async()=>{
+    try {
+      dispatch(deleteUserstart);
+      const res = await fetch(`/api/user/delete/${currentUser._id}`,
+        {
+          method:"DELETE",
+
+        }
+      );
+      const data=await res.json();
+      if(data.success === false){
+        dispatch(deleteUserFailure(data.message));
+        // return;
+      }
+      dispatch(deleteUsersuccess(data))
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message))
+    }
+  }
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-8">Profile</h1>
@@ -140,21 +163,23 @@ export default function Profile() {
           className="border p-3 rounded-lg"
         />
 
-        <button 
-        disabled={loading}
-        className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          {loading?'Loading':'update'}
+        <button
+          disabled={loading}
+          className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "Loading" : "update"}
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer ">Delete Account</span>
-        
+        <span onClick={handleDeleteUser}  className="text-red-700 cursor-pointer ">Delete Account</span>
+
         <span className="text-red-700 cursor-pointer ">Sign Out</span>
 
-        <p className="text-red-700 mt-6">{error?error:""}</p>
-      <p className="text-green-500 mt-6">{updateSuccess ?'User is updated successfully':''}</p>
+        <p className="text-red-700 mt-6">{error ? error : ""}</p>
+        <p className="text-green-500 mt-6">
+          {updateSuccess ? "User is updated successfully" : ""}
+        </p>
       </div>
-
     </div>
   );
 }
